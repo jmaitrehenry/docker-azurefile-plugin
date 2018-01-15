@@ -316,8 +316,17 @@ func mount(accountName, accountKey, storageBase, mountPath string, options Volum
 		fmt.Sprintf("uid=%s", options.UID),
 		fmt.Sprintf("gid=%s", options.GID),
 	}
+
+	if len(options.Cache) > 0 {
+		opts = append(opts, fmt.Sprintf("cache=%s", options.Cache))
+	}
+
 	if options.NoLock {
 		opts = append(opts, "nolock")
+	}
+
+	if options.NoBrl {
+		opts = append(opts, "nobrl")
 	}
 
 	// TODO: replace with mount() syscall using docker/docker/pkg/mount

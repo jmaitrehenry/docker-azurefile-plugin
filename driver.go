@@ -60,7 +60,7 @@ func (v *volumeDriver) Create(req volume.Request) (resp volume.Response) {
 		"name":      req.Name,
 		"options":   req.Options})
 
-	volMeta, err := v.meta.Validate(req.Options)
+	volMeta, err := v.meta.Validate(req.Options, req.Name)
 	if err != nil {
 		resp.Err = fmt.Sprintf("error validating metadata: %v", err)
 		logctx.Error(resp.Err)
@@ -71,7 +71,7 @@ func (v *volumeDriver) Create(req volume.Request) (resp volume.Response) {
 	volMeta.Account = v.accountName
 	volMeta.CreatedAt = time.Now().UTC()
 
-	share := req.Options["share"]
+	share := volMeta.Options.Share
 	if share == "" {
 		resp.Err = "missing volume option: 'share'"
 		logctx.Error(resp.Err)

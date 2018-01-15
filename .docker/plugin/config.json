@@ -58,7 +58,7 @@
     "Network": {
       "Type": "host"
     },
-    "PropagatedMount": "/var/lib/azurefile",
+    "PropagatedMount": "/var/run/docker/volumedriver/azurefile",
     "User": {},
     "WorkDir": ""
 }

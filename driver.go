@@ -324,7 +324,7 @@ func mount(accountName, accountKey, storageBase, mountPath string, options Volum
 	// (currently gives hard-to-debug 'invalid argument' error with the
 	// following arguments, my guess is, mount program does IP resolution
 	// and essentially passes a different set of options to system call).
-	cmd := exec.Command("mount", "-t", "cifs", mountURI, mountPath, "-o", strings.Join(opts, ","), "--verbose")
+	cmd := exec.Command("mount", "-t", "cifs", mountURI, mountPath, "-v", "-o", strings.Join(opts, ","))
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("mount failed: %v\noutput=%q", err, out)

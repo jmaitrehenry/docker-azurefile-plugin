@@ -1,10 +1,8 @@
 FROM alpine:3.6
 
 RUN apk --update add ca-certificates cifs-utils
-RUN mkdir -p /run/docker/plugins /var/run/docker/volumedriver/azurefile
+RUN mkdir -p /run/docker/plugins /var/lib/azurefile/volumes
 
-ADD azurefile-dockervolumedriver /usr/bin/azurefile-dockervolumedriver
-# ADD start.sh /start.sh
+ADD azurefile-driver /usr/bin/azurefile-driver
 
-# ENTRYPOINT [ "/start.sh" ]
-CMD [ "azurefile-dockervolumedriver" ]
+CMD [ "azurefile-driver" ]

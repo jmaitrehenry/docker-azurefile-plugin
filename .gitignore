@@ -1,6 +1,8 @@
 # Project-specific
-azurefile-dockervolumedriver
+docker-azurefile-plugin
 bin/
+.docker/plugin/rootfs
+.docker/plugin/docker-azurefile-plugin
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o

@@ -4,7 +4,7 @@ This is a Docker Volume Driver which uses [Azure Storage File Storage][afs]
 to mount file shares on the cloud to Docker containers as volumes. It uses network
 file sharing ([SMB/CIFS protocols][smb]) capabilities of Azure File Storage.
 
-[![Build Status](https://travis-ci.org/Azure/azurefile-dockervolumedriver.svg?branch=master)](https://travis-ci.org/Azure/azurefile-dockervolumedriver)
+[![Build Status](https://travis-ci.org/jmaitrehenry/docker-azurefile-plugin.svg?branch=master)](https://travis-ci.org/jmaitrehenry/docker-azurefile-plugin)
 
 ## Why?
 
@@ -22,63 +22,47 @@ and be aware of the limitations and what kind of applications are suitable for s
 
 ## Installation
 
-Please check out the following documentation:
+> Make sure you have a Storage Account on Azure (using Azure CLI or Portal).
 
-- [Install on Ubuntu 14.04 or lower (upstart)](contrib/init/upstart/README.md)
-- [Install on Ubuntu 15.04 or higher (systemd)](contrib/init/systemd/README.md)
+Docker managed plugin may be installed with following command:
 
-#### Start volume driver daemon
-
-* Make sure you have a Storage Account on Azure (using Azure CLI or Portal).
-* The server process must be running on the host machine where Docker engine is installed on
-  at all times for volumes to work properly.
-* “cifs-utils” package must be installed on the host system as Azure Files use SMB protocol.
-  For Debian/Ubuntu, run the following command on your host:
-```shell
-$ sudo apt-get install -y cifs-utils
+```bash
+$ docker plugin install jmaitrehenry/azurefile[:version] \
+    AZURE_STORAGE_ACCOUNT=xxx \
+    AZURE_STORAGE_ACCOUNT_KEY=yyy
 ```
-
-Please refer to “Installation” section above. If you like to build the binary from source,
-see “Building” section below on how to compile. Once the driver is installed, start it and
-check its status.
+The [:version] component in the above command is known as a Docker tag and its value follows the semantic versioning model. Omitting the version is equivalent to specifying the latest tag -- the most recent, stable version of a plug-in.
 
 > **NOTE:** Storage account must be in the same region as virtual machine. Otherwise
 > you will get an error like “Host is down”.
 
-Ideally you would want to run it on top of an init system (such as supervisord, systemd,
-runit) that would start it automatically and keep it running in case of reboots and crashes.
 
-#### Create volumes and containers
+## Example
+### Create volumes
 
 Starting from Docker 1.9+ you can create volumes and containers as follows:
 
 ```shell
-$ docker volume create --name my_volume -d azurefile -o share=myshare
-$ docker run -i -t -v my_volume:/data busybox
+$ docker volume create --name my_volume -d jmaitrehenry/azurefile
 ```
 
-or simply:
+This will create an Azure File Share named `my_volume` (if it does not exist).
 
-```shell
-$ docker run -it -v $(docker volume create -d azurefile -o share=myshare):/data busybox
-```
-
-This will create an Azure File Share named `myshare` (if it does not exist)
-and start a Docker container in which you can use `/data` directory to directly
-read/write from cloud file share location using SMB protocol.
-
-You can specify additional volume options to customize the owner, group, and permissions for files and directories. See the `mount.cifs(8)` man page more details on these options.
+You can specify additional volume options to customize the owner, group, and permissions for files and directories.
+See the `mount.cifs(8)` man page more details on these options.
 
 Mount Options Available:
 * `uid`
 * `gid`
 * `filemode`
 * `dirmode`
+* `cache`
 * `nolock`
+* `nobrl`
 * `remotepath`
 
 ```shell
-$ docker volume create -d azurefile \
+$ docker volume create -d jmaitrehenry/azurefile \
   -o share=sharename \
   -o uid=999 \
   -o gid=999 \
@@ -88,45 +72,32 @@ $ docker volume create -d azurefile \
   -o remotepath=directory
 ```
 
-## Demo
+### Use a volume
 
-![](http://cl.ly/image/2z1z1y030u3B/Image%202015-10-06%20at%203.18.39%20PM.gif)
+The following example illustrates using a volume:
 
+```
+$ docker run -i -t -v my_volume:/data busybox
+```
+Docker will start a container in which you can use `/data` directory to directly read/write from cloud file share location using SMB protocol.
+
+
+### Remove a volume
+The following example illustrates removing a volume created:
+
+```
+$ docker volume rm my_volume
+```
 
 ## Changelog
 
 ```
-# 0.5.1 (2016-09-16)
-- Bugfix: "bad UNC" error for remotepath (#63)
-
-# 0.5.0 (2016-08-19)
-- Added volume option 'remotepath' (#46)
-- Upgraded plugin protocol for docker 1.12.0 (#57)
-- Fixed stale version string in --help (#58)
-
-# 0.4.1 (2016-08-02)
-- Bugfix: wrong mount path was passed to mount command (#47, #48)
-
-# 0.4.0 (2016-07-28)
-- Added support for foreign Azure clouds (#43, #41)
-
-# 0.3.0 (2016-07-27)
-- Fixed systemd unit dependencies (#29)
-- Added options for uid, gid, filemode, dirmode, nolock (#44)
-- Documentation fixes (#39)
-
-# 0.2.1 (2016-03-10)
-- Start unix socket under docker group instead of root.
-
-# 0.2 (2016-03-01)
-- Added upstart init script and installation instructions.
-- Bugfix: Empty response for docker volume ls (#20)
-- Bugfix: Prevent leaking volume metadata (#19)
-- Bugfix: Proper mountpoint removal in duplicate mounts (#23)
-
-# 0.1 (2016-02-08)
-- Initial release.
-
+# 1.0.0 (2018-01-XX)
+- Change project name
+- Add nobrl and cache option
+- Add the possibility to build a selfcontain docker volume plugin
+- Add default share name to volume name
+- Bugfix: Change --verbose to -v and put it before -o in the mount instruction
 ```
 
 ## Building
@@ -136,33 +107,33 @@ link above. The following instructions are for compiling the project from source
 
 In order to compile this program, you need to have Go 1.6:
 
-```sh
-$ git clone https://github.com/Azure/azurefile-dockervolumedriver src/azurefile
-$ export GOPATH=`pwd`
-$ cd src/azurefile
-$ go build
-$ ./azurefile-dockervolumedriver -h
+```bash
+$ git clone https://github.com/jmaitrehenry/docker-azurefile-plugin jmaitrehenry/docker-azurefile-plugin
+$ cd jmaitrehenry/docker-azurefile-plugin
+$ go build docker-azurefile-plugin
+$ ./docker-azurefile-plugin -h
 ```
 
 Once you have the binary compiled you can start it as follows:
 
-```shell
-$ sudo ./azurefile-dockervolumedriver \
+```bash
+$ sudo ./docker-azurefile-plugin \
   --account-name <AzureStorageAccount> \
   --account-key  <AzureStorageAccountKey> &
 ```
 
-However you’re recommended to use an init system to start this process after
-docker engine and have it restarted between reboots and crashes. Please refer to
-“Installation” section for more info.
+However you’re recommended to use the managed docker plugin.
 
-## Author
+## Maintainers
 
-* [Ahmet Alp Balkan](https://github.com/ahmetalpbalkan)
+* [Julien Maitrehenry](https://github.com/jmaitrehenry)
 
 ## License
 
+This project is a fork of [Azure/azurefile-dockervolumedriver](https://github.com/Azure/azurefile-dockervolumedriver)
+
 ```
+Copyright 2018 Julien Maitrehenry
 Copyright 2016 Microsoft Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -180,7 +151,3 @@ limitations under the License.
 
 [afs]: http://blogs.msdn.com/b/windowsazurestorage/archive/2014/05/12/introducing-microsoft-azure-file-service.aspx
 [smb]: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365233(v=vs.85).aspx
-
-
------
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

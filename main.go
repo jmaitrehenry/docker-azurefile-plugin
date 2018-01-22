@@ -11,7 +11,7 @@ import (
 
 const (
 	volumeDriverName = "azurefile"
-	mountpoint       = "/var/run/docker/volumedriver/azurefile"
+	mountpoint       = "/var/lib/azurefile/volumes"
 	metadataRoot     = "/etc/docker/plugins/azurefile/volumes"
 )
 
@@ -24,7 +24,7 @@ var (
 
 func main() {
 	cmd := cli.NewApp()
-	cmd.Name = "azurefile-dockervolumedriver"
+	cmd.Name = "azurefile-driver"
 	cmd.Version = GitSummary
 	cmd.Usage = "Docker Volume Driver for Azure File Service"
 	cli.AppHelpTemplate = usageTemplate

@@ -6,9 +6,9 @@
       "Value": null
     },
     "Description": "Volume plugin for Azure File Storage",
-    "Documentation": "https://github.com/jmaitrehenry/azurefile-dockervolumedriver/.docker/plugin",
+    "Documentation": "https://github.com/jmaitrehenry/docker-azurefile-plugin/.docker/plugin",
     "Entrypoint": [
-      "azurefile-dockervolumedriver"
+      "azurefile-driver"
     ],
     "Env": [
       {
@@ -58,7 +58,7 @@
     "Network": {
       "Type": "host"
     },
-    "PropagatedMount": "/var/run/docker/volumedriver/azurefile",
+    "PropagatedMount": "/var/lib/azurefile/volumes",
     "User": {},
     "WorkDir": ""
 }

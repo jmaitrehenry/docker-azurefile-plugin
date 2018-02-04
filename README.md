@@ -92,7 +92,10 @@ $ docker volume rm my_volume
 ## Changelog
 
 ```
-# 1.0.0 (2018-01-XX)
+# 1.1.0 (2018-02-04)
+- Add symlink support
+
+# 1.0.0 (2018-01-22)
 - Change project name
 - Add nobrl and cache option
 - Add the possibility to build a selfcontain docker volume plugin

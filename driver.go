@@ -309,6 +309,7 @@ func mount(accountName, accountKey, storageBase, mountPath string, options Volum
 
 	opts := []string{
 		"vers=3.0",
+		"mfsymlinks",
 		fmt.Sprintf("username=%s", accountName),
 		fmt.Sprintf("password=%s", accountKey),
 		fmt.Sprintf("file_mode=%s", options.FileMode),

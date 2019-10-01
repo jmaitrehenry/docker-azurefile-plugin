@@ -43,10 +43,10 @@ The [:version] component in the above command is known as a Docker tag and its v
 Starting from Docker 1.9+ you can create volumes and containers as follows:
 
 ```shell
-$ docker volume create --name my_volume -d jmaitrehenry/azurefile
+$ docker volume create --name myvolume -d jmaitrehenry/azurefile
 ```
 
-This will create an Azure File Share named `my_volume` (if it does not exist).
+This will create an Azure File Share named `myvolume` (if it does not exist).
 
 You can specify additional volume options to customize the owner, group, and permissions for files and directories.
 See the `mount.cifs(8)` man page more details on these options.
@@ -77,7 +77,7 @@ $ docker volume create -d jmaitrehenry/azurefile \
 The following example illustrates using a volume:
 
 ```
-$ docker run -i -t -v my_volume:/data busybox
+$ docker run -i -t -v myvolume:/data busybox
 ```
 Docker will start a container in which you can use `/data` directory to directly read/write from cloud file share location using SMB protocol.
 
@@ -86,7 +86,7 @@ Docker will start a container in which you can use `/data` directory to directly
 The following example illustrates removing a volume created:
 
 ```
-$ docker volume rm my_volume
+$ docker volume rm myvolume
 ```
 
 ## Changelog
